@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  postgresDB:
+    image: postgres:13.7
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloakDB
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: changeMe
+
+  keycloak:
+    build: .
+    environment:
+      #Database Configuration
+      KC_DB: keycloakDB
+      KC_DB_URL: 'jdbc:postgresql://postgresDB/keycloakDB'
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: changeMe
+      KC_DB_SCHEMA: public
+      #Hostname Configuration
+      KC_HOSTNAME: "yourpublic.hostname.com"
+      KC_HOSTNAME_STRICT_HTTPS: 'true'
+      #Admin Credentials
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: CHanGeMe
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: CHanGeMe
+
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgresDB
+
+volumes:
+  keycloak-db-data:
+    driver: local
